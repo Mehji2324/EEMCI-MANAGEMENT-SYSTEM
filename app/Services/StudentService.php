@@ -47,6 +47,7 @@ class StudentService
 
             $this->studentRepo->update($id, [
                 'matricule' => $matricule,
+                'academic_email' => $academicEmail,
                 'status' => 'validated',
                 'validated_by' => $adminUser->id,
                 'validated_at' => now(),

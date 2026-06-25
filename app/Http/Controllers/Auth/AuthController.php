@@ -116,8 +116,8 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         $user = $request->user()->load('role');
-        $profile = null;
 
+        $profile = null;
         if ($user->isStudent()) {
             $profile = $user->student?->load(['filiere', 'classe']);
         } elseif ($user->isTeacher()) {
@@ -125,7 +125,13 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'user'    => $user,
+            'user' => [
+                'id'                   => $user->id,
+                'full_name'            => $user->full_name,
+                'email'                => $user->email,
+                'role'                 => $user->role->name,
+                'must_change_password' => $user->must_change_password,
+            ],
             'profile' => $profile,
         ]);
     }

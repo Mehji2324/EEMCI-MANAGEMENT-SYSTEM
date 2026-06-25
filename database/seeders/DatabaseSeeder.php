@@ -27,23 +27,53 @@ class DatabaseSeeder extends Seeder
             ['display_name' => 'Student', 'description' => 'Enrolled Student']
         );
 
-        // 2. Create Default Admin User
-        $adminEmail = env('ADMIN_EMAIL', 'admin@eemci.edu');
-        $adminPassword = env('ADMIN_PASSWORD') ?: \Illuminate\Support\Str::random(16);
+        // 2. Create Demo Accounts
+        $password = Hash::make('demo1234');
 
-        $admin = User::firstOrCreate(
-            ['email' => $adminEmail],
+        User::firstOrCreate(
+            ['email' => 'admin@eemci.ma'],
             [
                 'role_id'              => $adminRole->id,
-                'first_name'           => 'System',
-                'last_name'            => 'Admin',
-                'password'             => Hash::make($adminPassword),
-                'must_change_password' => true,
+                'first_name'           => 'Admin',
+                'last_name'            => 'EEMCI',
+                'password'             => $password,
+                'must_change_password' => false,
             ]
         );
 
-        if ($admin->wasRecentlyCreated && isset($this->command)) {
-            $this->command->info("Admin created with Email: {$adminEmail} and Password: {$adminPassword}");
-        }
+        $teacherUser = User::firstOrCreate(
+            ['email' => 'teacher@eemci.ma'],
+            [
+                'role_id'              => Role::where('name', 'teacher')->first()->id,
+                'first_name'           => 'Hicham',
+                'last_name'            => 'Alaoui',
+                'password'             => $password,
+                'must_change_password' => false,
+            ]
+        );
+
+        $studentUser = User::firstOrCreate(
+            ['email' => 'student@eemci.ma'],
+            [
+                'role_id'              => Role::where('name', 'student')->first()->id,
+                'first_name'           => 'Salma',
+                'last_name'            => 'Kabbaj',
+                'password'             => $password,
+                'must_change_password' => false,
+            ]
+        );
+
+        // Optionally, ensure the student profile exists and is validated
+        \App\Models\Student::firstOrCreate(
+            ['user_id' => $studentUser->id],
+            [
+                'date_of_birth' => '2000-01-01',
+                'place_of_birth' => 'Rabat',
+                'gender' => 'female',
+                'nationality' => 'Moroccan',
+                'address' => 'Rabat',
+                'status' => 'validated', // Validated so they can login
+            ]
+        );
     }
 }

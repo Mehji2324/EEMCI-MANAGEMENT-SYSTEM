@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('type');               // scolarite, inscription, examen ...
             $table->string('description')->nullable();
             $table->decimal('amount', 10, 2);
-            $table->string('currency')->default('XAF');
+            $table->string('currency')->default('MAD');
             $table->enum('status', ['pending', 'paid', 'failed', 'refunded'])->default('pending');
             $table->string('payment_method')->nullable(); // cash, mobile_money, bank_transfer
             $table->string('transaction_id')->nullable();

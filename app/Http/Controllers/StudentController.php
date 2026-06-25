@@ -53,4 +53,34 @@ class StudentController extends Controller
 
         return response()->json(['message' => 'Student deleted successfully.']);
     }
+
+    public function updateOwnProfile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (! $user->isStudent()) {
+            return response()->json(['message' => 'Forbidden.'], 403);
+        }
+
+        $request->validate([
+            'phone'          => ['nullable', 'string', 'max:20'],
+            'address'        => ['nullable', 'string', 'max:255'],
+            'guardian_name'  => ['nullable', 'string', 'max:100'],
+            'guardian_phone' => ['nullable', 'string', 'max:20'],
+        ]);
+
+        DB::transaction(function () use ($request, $user) {
+            if ($request->has('phone')) {
+                $user->update(['phone' => $request->phone]);
+            }
+            $user->student?->update($request->only([
+                'address', 'guardian_name', 'guardian_phone'
+            ]));
+        });
+
+        return response()->json([
+            'message' => 'Profile updated successfully.',
+            'user'    => $user->fresh(['student', 'role']),
+        ]);
+    }
 }

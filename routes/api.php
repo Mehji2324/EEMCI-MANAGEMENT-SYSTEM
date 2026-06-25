@@ -22,7 +22,8 @@ Route::prefix('v1')->group(function () {
     | Public Routes
     |--------------------------------------------------------------------------
     */
-    Route::middleware('throttle:login')->group(function () {
+    Route::middleware('throttle:20,1')->group(function () {
+
         Route::post('/auth/register', [AuthController::class, 'register']);
         Route::post('/auth/login', [AuthController::class, 'login']);
     });
@@ -37,7 +38,8 @@ Route::prefix('v1')->group(function () {
         // Auth & Profile
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
-        Route::post('/auth/change-password', [AuthController::class, 'changePassword']);
+        Route::post('/auth/change-password', [AuthController::class, 'changePassword'])
+             ->middleware('throttle:5,1');
 
         /*
         |--------------------------------------------------------------------------
@@ -105,6 +107,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/payments', [PaymentController::class, 'index']);
         Route::post('/payments', [PaymentController::class, 'store'])->middleware('role:admin');
         Route::get('/payments/{payment}', [PaymentController::class, 'show']);
+        Route::put('/auth/profile', [StudentController::class, 'updateOwnProfile']);
 
     });
 });
